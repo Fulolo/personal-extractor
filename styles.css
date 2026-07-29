@@ -135,9 +135,44 @@ body {
 .bank-select:hover { border-color: var(--accent); }
 .bank-select:focus { outline: none; border-color: var(--accent); box-shadow: 0 0 0 2px var(--accent-weak); }
 
-.topbar-spacer { flex: 1; }
+.topbar-notice-wrap {
+  flex: 1 1 auto;
+  min-width: 0;
+  overflow-x: auto;
+  overflow-y: hidden;
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+  -webkit-overflow-scrolling: touch;
+}
+.topbar-notice-wrap::-webkit-scrollbar { display: none; }
+.topbar-notice {
+  min-width: max-content;
+  height: 28px;
+  display: inline-flex;
+  align-items: center;
+  gap: 14px;
+  font-size: 11px;
+  line-height: 1.2;
+  color: var(--text-dim);
+  white-space: nowrap;
+  padding-right: 10px;
+}
+.topbar-notice a {
+  color: var(--accent);
+  text-decoration: none;
+}
+.topbar-notice a:hover { text-decoration: underline; }
 
-.topbar-stats { display: flex; gap: 12px; align-items: center; font-family: var(--font-mono); font-size: 11px; color: var(--text-dim); }
+.topbar-stats {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+  flex: 0 0 auto;
+  white-space: nowrap;
+  font-family: var(--font-mono);
+  font-size: 11px;
+  color: var(--text-dim);
+}
 .topbar-stats .stat { display: flex; align-items: center; gap: 4px; }
 .topbar-stats .dot { width: 7px; height: 7px; border-radius: 50%; }
 .topbar-stats .dot.remembered { background: var(--remembered); }
@@ -513,6 +548,12 @@ input[type="range"] { width: 100%; accent-color: var(--accent); }
   .brand-name { display: none; }
   .brand-sub { display: none; }
   .answer-wrap { max-height: var(--answer-max-h-mobile); }
+
+  .topbar-notice {
+    gap: 10px;
+    font-size: 10px;
+    padding-right: 8px;
+  }
 
   .app,
   .app.left-collapsed,
