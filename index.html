@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="zh-CN" data-theme="light">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Interview Extractor</title>
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <div class="app">
+    <!-- ===== 顶栏 ===== -->
+    <header class="topbar">
+      <div class="brand">
+        <span class="brand-mark">❯_</span>
+        <span class="brand-name">面试抽提器</span>
+        <span class="brand-sub" id="brandSub">Interview Extractor</span>
+      </div>
+      <select id="bankSelect" class="bank-select" title="切换题库"></select>
+      <div class="topbar-spacer"></div>
+      <div class="topbar-stats" id="topStats" title="全局记忆概览"></div>
+      <button class="icon-btn" id="themeToggle" title="切换主题 (浅色/深色)" aria-label="切换主题"></button>
+      <button class="icon-btn" id="toggleRight" title="显隐抽题配置栏" aria-label="抽题配置栏">
+        <svg viewBox="0 0 16 16" width="16" height="16"><path d="M1 2h9v12H1zM12 5l3 3-3 3" fill="none" stroke="currentColor" stroke-width="1.3"/></svg>
+      </button>
+    </header>
+
+    <!-- ===== 左侧活动栏（图标轨） ===== -->
+    <nav class="activitybar" id="activitybar">
+      <button class="act-btn active" data-view="explorer" title="题目库">
+        <svg viewBox="0 0 24 24" width="20" height="20"><path d="M4 4h7l2 2h7v13a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V5a1 1 0 0 1 1-1z" fill="none" stroke="currentColor" stroke-width="1.4"/><path d="M9 9h9M9 13h9M9 17h6" stroke="currentColor" stroke-width="1.4"/></svg>
+      </button>
+      <button class="act-btn" data-view="stats" title="记忆概览">
+        <svg viewBox="0 0 24 24" width="20" height="20"><path d="M4 20V10M10 20V4M16 20v-7M22 20H2" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></svg>
+      </button>
+      <button class="act-btn" data-view="settings" title="设置">
+        <svg viewBox="0 0 24 24" width="20" height="20"><circle cx="12" cy="12" r="3" fill="none" stroke="currentColor" stroke-width="1.4"/><path d="M12 2v3M12 19v3M2 12h3M19 12h3M5 5l2 2M17 17l2 2M19 5l-2 2M7 17l-2 2" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></svg>
+      </button>
+      <button class="act-btn" data-view="cache" title="缓存">
+        <svg viewBox="0 0 24 24" width="20" height="20"><ellipse cx="12" cy="6" rx="8" ry="3" fill="none" stroke="currentColor" stroke-width="1.4"/><path d="M4 6v12c0 1.7 3.6 3 8 3s8-1.3 8-3V6M4 12c0 1.7 3.6 3 8 3s8-1.3 8-3" fill="none" stroke="currentColor" stroke-width="1.4"/></svg>
+      </button>
+    </nav>
+
+    <!-- ===== 左侧面板 ===== -->
+    <aside class="leftpanel" id="leftPanel">
+      <div class="panel-head">
+        <span id="leftTitle">题目库</span>
+        <button class="icon-btn" id="collapseLeft" title="收起">
+          <svg viewBox="0 0 16 16" width="14" height="14"><path d="M10 3L5 8l5 5" fill="none" stroke="currentColor" stroke-width="1.4"/></svg>
+        </button>
+      </div>
+      <div class="panel-body" id="leftBody"></div>
+    </aside>
+
+    <!-- ===== 主编辑区 ===== -->
+    <main class="editor" id="main">
+      <div class="editor-toolbar">
+        <span class="session-title" id="sessionTitle">抽题会话</span>
+        <span class="session-meta" id="sessionMeta"></span>
+        <div class="spacer"></div>
+        <button class="btn ghost" id="clearSession" title="清空当前会话">清空</button>
+        <button class="btn" id="redraw" title="按当前配置重新抽取 (Ctrl/Cmd+Enter)">换一批</button>
+      </div>
+      <div class="editor-scroll" id="cards"></div>
+    </main>
+
+    <!-- ===== 右侧抽题配置栏 ===== -->
+    <aside class="rightpanel" id="rightPanel">
+      <div class="panel-head">
+        <span>抽题配置</span>
+        <button class="icon-btn" id="collapseRight" title="收起">
+          <svg viewBox="0 0 16 16" width="14" height="14"><path d="M6 3l5 5-5 5" fill="none" stroke="currentColor" stroke-width="1.4"/></svg>
+        </button>
+      </div>
+      <div class="panel-body" id="configBody">
+        <section class="cfg-section">
+          <div class="cfg-head">
+            <span class="cfg-title">题目种类</span>
+            <div class="cfg-links">
+              <button class="link-btn" id="selAll">全选</button>
+              <span class="sep">/</span>
+              <button class="link-btn" id="selNone">全不选</button>
+            </div>
+          </div>
+          <div class="cat-list" id="catList"></div>
+        </section>
+
+        <section class="cfg-section">
+          <div class="cfg-head">
+            <span class="cfg-title">抽取数量</span>
+            <span class="cfg-value"><span id="countVal">5</span> 道</span>
+          </div>
+          <input type="range" id="countRange" min="1" max="10" value="5" step="1" />
+          <div class="range-scale"><span>最少 1</span><span>最多 10</span></div>
+        </section>
+
+        <section class="cfg-section">
+          <label class="switch-row" for="hfToggle">
+            <span>只抽高频题 <span class="hint">（带 🌟）</span></span>
+            <span class="switch"><input type="checkbox" id="hfToggle" /><span class="track"></span></span>
+          </label>
+        </section>
+
+        <section class="cfg-section eligible">
+          可抽题目：<b id="eligibleCount">0</b> 道
+        </section>
+
+        <button class="draw-btn" id="drawBtn">抽 题</button>
+      </div>
+    </aside>
+
+    <!-- ===== 单题查看浮层 ===== -->
+    <div class="inspect-overlay" id="inspectOverlay" hidden>
+      <div class="inspect-modal" id="inspectModal"></div>
+    </div>
+  </div>
+
+  <script src="vendor/marked.min.js"></script>
+  <script src="data/sanfene.js"></script>
+  <script src="data/javaguide.js"></script>
+  <script src="data/banks.js"></script>
+  <script src="memory.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>
