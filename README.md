@@ -1,2 +1,4 @@
 # personal-extractor
-this is java extractor
+
+自用的小工具
+https://fulolo.github.io/personal-extractor/
